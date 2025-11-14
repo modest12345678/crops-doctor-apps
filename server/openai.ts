@@ -1,7 +1,10 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// DON'T DELETE THIS COMMENT
+// Using Gemini API for potato disease detection
+// Note that the newest Gemini model series is "gemini-2.5-flash" or "gemini-2.5-pro"
+// This API key is from Gemini Developer API Key, not vertex AI API Key
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 export interface DiseaseAnalysis {
   diseaseName: string;
@@ -18,13 +21,8 @@ export async function analyzePotatoDisease(base64Image: string): Promise<Disease
       ? base64Image.split('base64,')[1] 
       : base64Image;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-5",
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert agricultural pathologist specializing in potato diseases. Analyze potato plant images and identify diseases with high accuracy. 
-          
+    const systemPrompt = `You are an expert agricultural pathologist specializing in potato diseases. Analyze potato plant images and identify diseases with high accuracy. 
+
 Common potato diseases include:
 - Late Blight (Phytophthora infestans)
 - Early Blight (Alternaria solani)
@@ -42,29 +40,45 @@ Provide analysis in JSON format with these fields:
 - symptoms: Observable symptoms in the image
 - treatment: Recommended treatment or management practices
 
-Be thorough and accurate. If the image doesn't show a potato plant, indicate that clearly.`,
+Be thorough and accurate. If the image doesn't show a potato plant, indicate that clearly.`;
+
+    const contents = [
+      {
+        inlineData: {
+          data: imageData,
+          mimeType: "image/jpeg",
         },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Analyze this potato plant image and identify any diseases present. Provide detailed information about symptoms and treatment recommendations.",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${imageData}`,
-              },
-            },
-          ],
+      },
+      "Analyze this potato plant image and identify any diseases present. Provide detailed information about symptoms and treatment recommendations.",
+    ];
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-pro",
+      config: {
+        systemInstruction: systemPrompt,
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            diseaseName: { type: "string" },
+            confidence: { type: "number" },
+            description: { type: "string" },
+            symptoms: { type: "string" },
+            treatment: { type: "string" },
+          },
+          required: ["diseaseName", "confidence", "description", "symptoms", "treatment"],
         },
-      ],
-      response_format: { type: "json_object" },
-      max_completion_tokens: 2048,
+      },
+      contents: contents,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    const rawJson = response.text;
+    
+    if (!rawJson) {
+      throw new Error("Empty response from Gemini model");
+    }
+
+    const result: DiseaseAnalysis = JSON.parse(rawJson);
 
     return {
       diseaseName: result.diseaseName || "Unknown Disease",
