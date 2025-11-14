@@ -2,7 +2,7 @@ export type Language = "en" | "bn";
 
 export const translations = {
   en: {
-    appTitle: "Crop Disease Detector",
+    appTitle: "CROP DOCTOR",
     appDescription: "Select your crop type and upload or capture a photo to instantly identify diseases using AI-powered analysis",
     selectCrop: "Select Crop:",
     crops: {
