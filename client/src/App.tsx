@@ -8,7 +8,7 @@ import Home from "@/pages/home";
 import History from "@/pages/history";
 import Training from "@/pages/training";
 import NotFound from "@/pages/not-found";
-import { Leaf, Home as HomeIcon, History as HistoryIcon, GraduationCap, Languages } from "lucide-react";
+import { Leaf, Home as HomeIcon, History as HistoryIcon, GraduationCap, Languages, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -28,7 +28,14 @@ function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer hover-elevate px-3 py-2 rounded-md" data-testid="logo">
-              <Leaf className="w-6 h-6 text-primary" />
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Leaf className="w-5 h-5 text-primary" />
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                  <Stethoscope className="w-2.5 h-2.5 text-primary-foreground" />
+                </div>
+              </div>
               <span className="font-bold text-lg">{t.appTitle}</span>
             </div>
           </Link>
