@@ -45,7 +45,7 @@ export const translations = {
     navTrainAI: "Train AI",
   },
   bn: {
-    appTitle: "ক্রপ ডক্টর",
+    appTitle: "ফসলের ডাক্তার",
     appDescription: "আপনার ফসলের ধরন চয়ন করুন এবং AI-চালিত বিশ্লেষণ ব্যবহার করে তাৎক্ষণিকভাবে রোগ সনাক্ত করতে একটি ছবি আপলোড বা ক্যাপচার করুন",
     selectCrop: "ফসল নির্বাচন করুন:",
     crops: {
