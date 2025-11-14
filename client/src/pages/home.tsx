@@ -215,7 +215,7 @@ export default function Home() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div>
+                  <div data-testid="section-disease-info">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-2xl font-bold" data-testid="text-disease-name">
                         {detectionResult.diseaseName}
@@ -232,9 +232,9 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="space-y-4">
-                    <div className="p-4 bg-muted rounded-lg">
-                      <h4 className="font-semibold mb-2 flex items-center gap-2">
+                  <div className="space-y-4" data-testid="section-disease-details">
+                    <div className="p-4 bg-muted rounded-lg" data-testid="card-symptoms">
+                      <h4 className="font-semibold mb-2 flex items-center gap-2" data-testid="heading-symptoms">
                         Symptoms
                       </h4>
                       <p className="text-sm text-muted-foreground" data-testid="text-symptoms">
@@ -242,8 +242,8 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                      <h4 className="font-semibold mb-2 flex items-center gap-2 text-primary">
+                    <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg" data-testid="card-treatment">
+                      <h4 className="font-semibold mb-2 flex items-center gap-2 text-primary" data-testid="heading-treatment">
                         Recommended Treatment
                       </h4>
                       <p className="text-sm" data-testid="text-treatment">

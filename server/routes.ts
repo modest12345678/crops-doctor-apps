@@ -5,22 +5,22 @@ import { analyzePotatoDisease } from "./openai";
 import { insertDetectionSchema, insertTrainingDataSchema } from "@shared/schema";
 import { z } from "zod";
 
+const detectRequestSchema = z.object({
+  imageData: z.string().min(1, "Image data is required"),
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Disease detection endpoint
   app.post("/api/detect", async (req, res) => {
     try {
-      const { imageData } = req.body;
-
-      if (!imageData) {
-        return res.status(400).json({ message: "Image data is required" });
-      }
+      const validatedRequest = detectRequestSchema.parse(req.body);
 
       // Analyze image using OpenAI Vision API
-      const analysis = await analyzePotatoDisease(imageData);
+      const analysis = await analyzePotatoDisease(validatedRequest.imageData);
 
       // Store detection result
       const detection = await storage.createDetection({
-        imageData,
+        imageData: validatedRequest.imageData,
         diseaseName: analysis.diseaseName,
         confidence: analysis.confidence,
         description: analysis.description,
@@ -30,6 +30,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(detection);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
       console.error("Detection error:", error);
       res.status(500).json({ 
         message: error instanceof Error ? error.message : "Failed to analyze image" 
