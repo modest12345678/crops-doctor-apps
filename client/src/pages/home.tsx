@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/LanguageContext";
 import type { Detection } from "@shared/schema";
+import heroImage from "@assets/Gemini_Generated_Image_1h0ru81h0ru81h0r_1763126726400.png";
 
 type CropType = "potato" | "tomato" | "corn" | "wheat" | "rice";
 
@@ -78,33 +79,43 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
-            {t.appTitle}
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-            {t.appDescription}
-          </p>
-          
-          <div className="flex items-center justify-center gap-3">
-            <label htmlFor="crop-select" className="text-sm font-medium text-muted-foreground">
-              {t.selectCrop}
-            </label>
-            <Select value={selectedCrop} onValueChange={(value) => setSelectedCrop(value as CropType)}>
-              <SelectTrigger className="w-48" id="crop-select" data-testid="select-crop">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {cropOptions.map((crop) => (
-                  <SelectItem key={crop.value} value={crop.value} data-testid={`option-crop-${crop.value}`}>
-                    {crop.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div 
+        className="relative bg-cover bg-center overflow-hidden mb-8"
+        style={{ backgroundImage: `url(${heroImage})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white drop-shadow-lg">
+              {t.appTitle}
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-8 drop-shadow">
+              {t.appDescription}
+            </p>
+            
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <label htmlFor="crop-select" className="text-sm font-medium text-white/90">
+                {t.selectCrop}
+              </label>
+              <Select value={selectedCrop} onValueChange={(value) => setSelectedCrop(value as CropType)}>
+                <SelectTrigger className="w-48 bg-white/10 backdrop-blur-sm border-white/20 text-white" id="crop-select" data-testid="select-crop">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {cropOptions.map((crop) => (
+                    <SelectItem key={crop.value} value={crop.value} data-testid={`option-crop-${crop.value}`}>
+                      {crop.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 pb-8">
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="space-y-6">
