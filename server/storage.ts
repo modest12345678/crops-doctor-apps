@@ -49,6 +49,7 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const data: TrainingData = {
       ...insertData,
+      userNotes: insertData.userNotes ?? null,
       id,
       createdAt: new Date(),
     };
