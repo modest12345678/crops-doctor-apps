@@ -2,13 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, History as HistoryIcon, Image as ImageIcon } from "lucide-react";
+import { useLanguage } from "@/lib/LanguageContext";
 import type { Detection } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
+import { enUS, bn } from "date-fns/locale";
 
 export default function History() {
   const { data: detections, isLoading } = useQuery<Detection[]>({
     queryKey: ["/api/detections"],
   });
+  const { language, t } = useLanguage();
+
+  const dateLocale = language === "bn" ? bn : enUS;
 
   return (
     <div className="min-h-screen bg-background">
@@ -16,10 +21,10 @@ export default function History() {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
             <HistoryIcon className="w-8 h-8" />
-            Detection History
+            {t.detectionHistory}
           </h1>
           <p className="text-muted-foreground">
-            View all your previous disease detections and analysis results
+            {t.historyDescription}
           </p>
         </div>
 
@@ -34,8 +39,8 @@ export default function History() {
             <CardContent className="py-12">
               <div className="text-center text-muted-foreground">
                 <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg mb-2">No detections yet</p>
-                <p className="text-sm">Start analyzing crop plants to build your history</p>
+                <p className="text-lg mb-2">{t.noDetections}</p>
+                <p className="text-sm">{t.startAnalyzing}</p>
               </div>
             </CardContent>
           </Card>
@@ -60,7 +65,7 @@ export default function History() {
                     </div>
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm" data-testid={`badge-confidence-${detection.id}`}>
-                        {detection.confidence}% confident
+                        {detection.confidence}% {t.confident}
                       </Badge>
                     </div>
                   </div>
@@ -73,7 +78,7 @@ export default function History() {
                     {detection.description}
                   </CardDescription>
                   <div className="text-xs text-muted-foreground" data-testid={`text-date-${detection.id}`}>
-                    {formatDistanceToNow(new Date(detection.createdAt), { addSuffix: true })}
+                    {formatDistanceToNow(new Date(detection.createdAt), { addSuffix: true, locale: dateLocale })}
                   </div>
                 </CardContent>
               </Card>

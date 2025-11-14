@@ -6,17 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useLanguage } from "@/lib/LanguageContext";
 import type { Detection } from "@shared/schema";
 
 type CropType = "potato" | "tomato" | "corn" | "wheat" | "rice";
-
-const cropOptions: { value: CropType; label: string }[] = [
-  { value: "potato", label: "Potato" },
-  { value: "tomato", label: "Tomato" },
-  { value: "corn", label: "Corn" },
-  { value: "wheat", label: "Wheat" },
-  { value: "rice", label: "Rice" },
-];
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -26,22 +19,31 @@ export default function Home() {
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { language, t } = useLanguage();
+
+  const cropOptions: { value: CropType; label: string }[] = [
+    { value: "potato", label: t.crops.potato },
+    { value: "tomato", label: t.crops.tomato },
+    { value: "corn", label: t.crops.corn },
+    { value: "wheat", label: t.crops.wheat },
+    { value: "rice", label: t.crops.rice },
+  ];
 
   const detectMutation = useMutation({
-    mutationFn: async (params: { imageData: string; cropType: CropType }) => {
+    mutationFn: async (params: { imageData: string; cropType: CropType; language: "en" | "bn" }) => {
       return await apiRequest<Detection>("POST", "/api/detect", params);
     },
     onSuccess: (data) => {
       setDetectionResult(data);
       queryClient.invalidateQueries({ queryKey: ["/api/detections"] });
       toast({
-        title: "Disease Detected!",
-        description: `Identified: ${data.diseaseName} with ${data.confidence}% confidence`,
+        title: t.diseaseDetected,
+        description: t.diseaseIdentified(data.diseaseName, data.confidence),
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Detection Failed",
+        title: t.detectionFailed,
         description: error.message,
         variant: "destructive",
       });
@@ -63,7 +65,7 @@ export default function Home() {
 
   const handleAnalyze = () => {
     if (selectedImage) {
-      detectMutation.mutate({ imageData: selectedImage, cropType: selectedCrop });
+      detectMutation.mutate({ imageData: selectedImage, cropType: selectedCrop, language });
     }
   };
 
@@ -79,15 +81,15 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
-            Crop Disease Detector
+            {t.appTitle}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-            Select your crop type and upload or capture a photo to instantly identify diseases using AI-powered analysis
+            {t.appDescription}
           </p>
           
           <div className="flex items-center justify-center gap-3">
             <label htmlFor="crop-select" className="text-sm font-medium text-muted-foreground">
-              Select Crop:
+              {t.selectCrop}
             </label>
             <Select value={selectedCrop} onValueChange={(value) => setSelectedCrop(value as CropType)}>
               <SelectTrigger className="w-48" id="crop-select" data-testid="select-crop">
@@ -110,10 +112,10 @@ export default function Home() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-primary" />
-                  Upload Image
+                  {t.uploadImage}
                 </CardTitle>
                 <CardDescription>
-                  Take a photo with your camera or select an image from your gallery
+                  {t.uploadDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -126,10 +128,10 @@ export default function Home() {
                     >
                       <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground mb-2">
-                        Click to upload or drag and drop
+                        {t.clickToUpload}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        PNG, JPG, WEBP up to 10MB
+                        {t.fileTypes}
                       </p>
                     </div>
 
@@ -142,7 +144,7 @@ export default function Home() {
                         data-testid="button-gallery"
                       >
                         <Upload className="w-4 h-4 mr-2" />
-                        From Gallery
+                        {t.fromGallery}
                       </Button>
                       <Button
                         variant="outline"
@@ -152,7 +154,7 @@ export default function Home() {
                         data-testid="button-camera"
                       >
                         <Camera className="w-4 h-4 mr-2" />
-                        Take Photo
+                        {t.takePhoto}
                       </Button>
                     </div>
 
@@ -192,7 +194,7 @@ export default function Home() {
                         disabled={detectMutation.isPending}
                         data-testid="button-reset"
                       >
-                        Change Image
+                        {t.changeImage}
                       </Button>
                       <Button
                         className="flex-1"
@@ -203,12 +205,12 @@ export default function Home() {
                         {detectMutation.isPending ? (
                           <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Analyzing...
+                            {t.analyzing}
                           </>
                         ) : (
                           <>
                             <Sparkles className="w-4 h-4 mr-2" />
-                            Analyze Image
+                            {t.analyzeImage}
                           </>
                         )}
                       </Button>
@@ -226,9 +228,9 @@ export default function Home() {
                   <div className="text-center space-y-4">
                     <Loader2 className="w-12 h-12 mx-auto animate-spin text-primary" />
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">Analyzing Image</h3>
+                      <h3 className="text-lg font-semibold mb-2">{t.analyzingTitle}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Our AI is examining your {selectedCrop} plant for disease symptoms...
+                        {t.analyzingMessage(cropOptions.find(c => c.value === selectedCrop)?.label || "")}
                       </p>
                     </div>
                   </div>
@@ -241,7 +243,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-primary" />
-                    Detection Result
+                    {t.detectionResult}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -251,7 +253,7 @@ export default function Home() {
                         {detectionResult.diseaseName}
                       </h3>
                       <div className="text-right">
-                        <div className="text-sm text-muted-foreground">Confidence</div>
+                        <div className="text-sm text-muted-foreground">{t.confidence}</div>
                         <div className="text-2xl font-bold text-primary" data-testid="text-confidence">
                           {detectionResult.confidence}%
                         </div>
@@ -265,7 +267,7 @@ export default function Home() {
                   <div className="space-y-4" data-testid="section-disease-details">
                     <div className="p-4 bg-muted rounded-lg" data-testid="card-symptoms">
                       <h4 className="font-semibold mb-2 flex items-center gap-2" data-testid="heading-symptoms">
-                        Symptoms
+                        {t.symptoms}
                       </h4>
                       <p className="text-sm text-muted-foreground" data-testid="text-symptoms">
                         {detectionResult.symptoms}
@@ -274,7 +276,7 @@ export default function Home() {
 
                     <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg" data-testid="card-treatment">
                       <h4 className="font-semibold mb-2 flex items-center gap-2 text-primary" data-testid="heading-treatment">
-                        Recommended Treatment
+                        {t.recommendedTreatment}
                       </h4>
                       <p className="text-sm" data-testid="text-treatment">
                         {detectionResult.treatment}
@@ -288,7 +290,7 @@ export default function Home() {
                     onClick={handleReset}
                     data-testid="button-new-analysis"
                   >
-                    Analyze Another Image
+                    {t.analyzeAnother}
                   </Button>
                 </CardContent>
               </Card>
@@ -299,7 +301,7 @@ export default function Home() {
                 <CardContent className="py-12">
                   <div className="text-center text-muted-foreground">
                     <Camera className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>Upload or capture an image to get started</p>
+                    <p>{t.uploadToStart}</p>
                   </div>
                 </CardContent>
               </Card>

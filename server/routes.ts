@@ -8,6 +8,7 @@ import { z } from "zod";
 const detectRequestSchema = z.object({
   imageData: z.string().min(1, "Image data is required"),
   cropType: z.enum(["potato", "tomato", "corn", "wheat", "rice"]).default("potato"),
+  language: z.enum(["en", "bn"]).default("en"),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -17,7 +18,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedRequest = detectRequestSchema.parse(req.body);
 
       // Analyze image using Gemini Vision API
-      const analysis = await analyzeCropDisease(validatedRequest.imageData, validatedRequest.cropType as CropType);
+      const analysis = await analyzeCropDisease(
+        validatedRequest.imageData, 
+        validatedRequest.cropType as CropType,
+        validatedRequest.language as "en" | "bn"
+      );
 
       // Store detection result
       const detection = await storage.createDetection({

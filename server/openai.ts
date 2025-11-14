@@ -86,7 +86,11 @@ const cropDiseaseInfo: Record<CropType, { diseases: string[]; specialization: st
   }
 };
 
-export async function analyzeCropDisease(base64Image: string, cropType: CropType): Promise<DiseaseAnalysis> {
+export async function analyzeCropDisease(
+  base64Image: string, 
+  cropType: CropType, 
+  language: "en" | "bn" = "en"
+): Promise<DiseaseAnalysis> {
   try {
     const imageData = base64Image.includes('base64,') 
       ? base64Image.split('base64,')[1] 
@@ -95,19 +99,29 @@ export async function analyzeCropDisease(base64Image: string, cropType: CropType
     const cropInfo = cropDiseaseInfo[cropType];
     const diseaseList = cropInfo.diseases.map(disease => `- ${disease}`).join('\n');
 
+    const languageInstruction = language === "bn" 
+      ? "Provide all responses in Bengali (বাংলা) language. All text fields including diseaseName, description, symptoms, and treatment must be in Bengali."
+      : "Provide all responses in English language.";
+
     const systemPrompt = `You are an expert agricultural pathologist specializing in ${cropInfo.specialization}. Analyze ${cropType} plant images and identify diseases with high accuracy. 
+
+${languageInstruction}
 
 Common ${cropType} diseases include:
 ${diseaseList}
 
 Provide analysis in JSON format with these fields:
-- diseaseName: The specific disease identified or "Healthy Plant"
-- confidence: Confidence level 1-100
-- description: Brief description of the disease
-- symptoms: Observable symptoms in the image
-- treatment: Recommended treatment or management practices
+- diseaseName: The specific disease identified or "Healthy Plant" (in ${language === "bn" ? "Bengali" : "English"})
+- confidence: Confidence level 1-100 (numeric value)
+- description: Brief description of the disease (in ${language === "bn" ? "Bengali" : "English"})
+- symptoms: Observable symptoms in the image (in ${language === "bn" ? "Bengali" : "English"})
+- treatment: Recommended treatment or management practices (in ${language === "bn" ? "Bengali" : "English"})
 
-Be thorough and accurate. If the image doesn't show a ${cropType} plant, indicate that clearly.`;
+Be thorough and accurate. If the image doesn't show a ${cropType} plant, indicate that clearly in ${language === "bn" ? "Bengali" : "English"}.`;
+
+    const userPrompt = language === "bn"
+      ? `এই ${cropType} গাছের ছবি বিশ্লেষণ করুন এবং কোনো রোগ সনাক্ত করুন। লক্ষণ এবং চিকিৎসার সুপারিশ সম্পর্কে বিস্তারিত তথ্য প্রদান করুন। সমস্ত উত্তর বাংলায় দিন।`
+      : `Analyze this ${cropType} plant image and identify any diseases present. Provide detailed information about symptoms and treatment recommendations in English.`;
 
     const contents = [
       {
@@ -116,7 +130,7 @@ Be thorough and accurate. If the image doesn't show a ${cropType} plant, indicat
           mimeType: "image/jpeg",
         },
       },
-      `Analyze this ${cropType} plant image and identify any diseases present. Provide detailed information about symptoms and treatment recommendations.`,
+      userPrompt,
     ];
 
     const response = await ai.models.generateContent({
