@@ -5,6 +5,7 @@ import { z } from "zod";
 
 export const detections = pgTable("detections", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  cropType: text("crop_type").notNull(),
   imageData: text("image_data").notNull(),
   diseaseName: text("disease_name").notNull(),
   confidence: integer("confidence").notNull(),

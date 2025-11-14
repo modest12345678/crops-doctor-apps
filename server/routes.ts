@@ -1,12 +1,13 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { analyzePotatoDisease } from "./openai";
+import { analyzeCropDisease, type CropType } from "./openai";
 import { insertDetectionSchema, insertTrainingDataSchema } from "@shared/schema";
 import { z } from "zod";
 
 const detectRequestSchema = z.object({
   imageData: z.string().min(1, "Image data is required"),
+  cropType: z.enum(["potato", "tomato", "corn", "wheat", "rice"]).default("potato"),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -15,11 +16,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedRequest = detectRequestSchema.parse(req.body);
 
-      // Analyze image using OpenAI Vision API
-      const analysis = await analyzePotatoDisease(validatedRequest.imageData);
+      // Analyze image using Gemini Vision API
+      const analysis = await analyzeCropDisease(validatedRequest.imageData, validatedRequest.cropType as CropType);
 
       // Store detection result
       const detection = await storage.createDetection({
+        cropType: validatedRequest.cropType,
         imageData: validatedRequest.imageData,
         diseaseName: analysis.diseaseName,
         confidence: analysis.confidence,

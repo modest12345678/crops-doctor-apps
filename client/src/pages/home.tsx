@@ -2,13 +2,25 @@ import { useState, useRef } from "react";
 import { Camera, Upload, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { Detection } from "@shared/schema";
 
+type CropType = "potato" | "tomato" | "corn" | "wheat" | "rice";
+
+const cropOptions: { value: CropType; label: string }[] = [
+  { value: "potato", label: "Potato" },
+  { value: "tomato", label: "Tomato" },
+  { value: "corn", label: "Corn" },
+  { value: "wheat", label: "Wheat" },
+  { value: "rice", label: "Rice" },
+];
+
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedCrop, setSelectedCrop] = useState<CropType>("potato");
   const [detectionResult, setDetectionResult] = useState<Detection | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -16,8 +28,8 @@ export default function Home() {
   const queryClient = useQueryClient();
 
   const detectMutation = useMutation({
-    mutationFn: async (imageData: string) => {
-      return await apiRequest<Detection>("POST", "/api/detect", { imageData });
+    mutationFn: async (params: { imageData: string; cropType: CropType }) => {
+      return await apiRequest<Detection>("POST", "/api/detect", params);
     },
     onSuccess: (data) => {
       setDetectionResult(data);
@@ -51,7 +63,7 @@ export default function Home() {
 
   const handleAnalyze = () => {
     if (selectedImage) {
-      detectMutation.mutate(selectedImage);
+      detectMutation.mutate({ imageData: selectedImage, cropType: selectedCrop });
     }
   };
 
@@ -67,11 +79,29 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-primary to-chart-3 bg-clip-text text-transparent">
-            Potato Disease Detector
+            Crop Disease Detector
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload or capture a photo of your potato plant to instantly identify diseases using AI-powered analysis
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
+            Select your crop type and upload or capture a photo to instantly identify diseases using AI-powered analysis
           </p>
+          
+          <div className="flex items-center justify-center gap-3">
+            <label htmlFor="crop-select" className="text-sm font-medium text-muted-foreground">
+              Select Crop:
+            </label>
+            <Select value={selectedCrop} onValueChange={(value) => setSelectedCrop(value as CropType)}>
+              <SelectTrigger className="w-48" id="crop-select" data-testid="select-crop">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {cropOptions.map((crop) => (
+                  <SelectItem key={crop.value} value={crop.value} data-testid={`option-crop-${crop.value}`}>
+                    {crop.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
@@ -149,7 +179,7 @@ export default function Home() {
                     <div className="relative rounded-lg overflow-hidden border">
                       <img
                         src={selectedImage}
-                        alt="Selected potato plant"
+                        alt={`Selected ${selectedCrop} plant`}
                         className="w-full h-auto"
                         data-testid="img-preview"
                       />
@@ -198,7 +228,7 @@ export default function Home() {
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Analyzing Image</h3>
                       <p className="text-sm text-muted-foreground">
-                        Our AI is examining your potato plant for disease symptoms...
+                        Our AI is examining your {selectedCrop} plant for disease symptoms...
                       </p>
                     </div>
                   </div>

@@ -35,7 +35,7 @@ export default function History() {
               <div className="text-center text-muted-foreground">
                 <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p className="text-lg mb-2">No detections yet</p>
-                <p className="text-sm">Start analyzing potato plants to build your history</p>
+                <p className="text-sm">Start analyzing crop plants to build your history</p>
               </div>
             </CardContent>
           </Card>
@@ -53,6 +53,11 @@ export default function History() {
                       className="w-full h-full object-cover"
                       data-testid={`img-detection-${detection.id}`}
                     />
+                    <div className="absolute top-2 left-2">
+                      <Badge variant="default" className="bg-primary/90 backdrop-blur-sm capitalize" data-testid={`badge-crop-${detection.id}`}>
+                        {detection.cropType}
+                      </Badge>
+                    </div>
                     <div className="absolute top-2 right-2">
                       <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm" data-testid={`badge-confidence-${detection.id}`}>
                         {detection.confidence}% confident
