@@ -1,8 +1,8 @@
-# Potato Disease Detector
+# Multi-Crop Disease Detector
 
 ## Overview
 
-This is an AI-powered potato disease detection application that uses OpenAI's GPT-5 Vision API to analyze images of potato plants and identify diseases. Users can upload photos from their camera or file system, receive instant disease identification with confidence scores, view detailed treatment recommendations, and maintain a history of past detections. The application also includes a training data submission feature to help improve the AI model over time.
+This is an AI-powered crop disease detection application that uses Google's Gemini Vision API to analyze images of crop plants and identify diseases. The application supports multiple crop types including potato, tomato, corn, wheat, and rice. Users can select their crop type, upload photos from their camera or file system, receive instant disease identification with confidence scores, view detailed treatment recommendations, and maintain a history of past detections. The application also includes a training data submission feature to help improve the AI model over time.
 
 ## User Preferences
 
@@ -30,7 +30,7 @@ Preferred communication style: Simple, everyday language.
 **Server Framework**: Express.js with TypeScript, serving both API endpoints and the Vite development server in development mode.
 
 **API Design**: RESTful endpoints structured as:
-- `POST /api/detect` - Submit images for disease analysis
+- `POST /api/detect` - Submit images and crop type for disease analysis
 - `GET /api/detections` - Retrieve detection history
 - `POST /api/training` - Submit training data
 - `GET /api/training` - Retrieve training data submissions
@@ -44,10 +44,10 @@ Preferred communication style: Simple, everyday language.
 
 ### External Dependencies
 
-**OpenAI GPT-5 Vision API**: The core AI service for disease detection. Images are sent as base64-encoded data to the GPT-5 model with a specialized system prompt that identifies common potato diseases including Late Blight, Early Blight, Potato Virus Y, Blackleg, Common Scab, Potato Leafroll Virus, Fusarium Dry Rot, and healthy plants. Returns structured JSON responses with disease name, confidence level, description, symptoms, and treatment recommendations.
+**Google Gemini Vision API**: The core AI service for disease detection. Images are sent as base64-encoded data to the Gemini 2.5 Pro model with crop-specific system prompts that identify common diseases for each supported crop type (potato, tomato, corn, wheat, rice). Each crop has a curated list of common diseases, and the system adapts the analysis prompt based on the selected crop. Returns structured JSON responses with disease name, confidence level, description, symptoms, and treatment recommendations.
 
 **Database**: Configured for PostgreSQL via Neon serverless driver, though currently using in-memory storage. The Drizzle schema defines two tables:
-- `detections` - Stores disease detection results with image data and AI analysis
+- `detections` - Stores disease detection results with crop type, image data, and AI analysis
 - `training_data` - Collects user-submitted data for model improvement
 
 **Build & Development Tools**:
