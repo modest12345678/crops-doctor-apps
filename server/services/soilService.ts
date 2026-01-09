@@ -51,6 +51,18 @@ async function initGEE() {
     if (geeInitialized) return true;
 
     try {
+        // 1. Try Environment Variable (Vercel Production)
+        if (process.env.GOOGLE_PRIVATE_KEY) {
+            try {
+                const keyContent = JSON.parse(process.env.GOOGLE_PRIVATE_KEY);
+                console.log("GEE: Found private key in environment variables.");
+                return await authenticateGEE(keyContent);
+            } catch (e) {
+                console.error("GEE: Failed to parse GOOGLE_PRIVATE_KEY env var", e);
+            }
+        }
+
+        // 2. Try Local File (Development)
         if (!fs.existsSync(KEY_PATH)) {
             console.warn("GEE: private-key.json not found. Using Mock Data.");
             return false;
@@ -63,28 +75,32 @@ async function initGEE() {
             return false;
         }
 
-        return new Promise<boolean>((resolve) => {
-            ee.data.authenticateViaPrivateKey(keyContent, () => {
-                ee.initialize(null, null,
-                    () => {
-                        console.log("GEE: Successfully initialized.");
-                        geeInitialized = true;
-                        resolve(true);
-                    },
-                    (err: any) => {
-                        console.error("GEE: Initialization failed:", err);
-                        resolve(false);
-                    }
-                );
-            }, (err: any) => {
-                console.error("GEE: Authentication failed:", err);
-                resolve(false);
-            });
-        });
+        return await authenticateGEE(keyContent);
     } catch (error) {
         console.error("GEE: Setup error:", error);
         return false;
     }
+}
+
+async function authenticateGEE(keyContent: any): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+        ee.data.authenticateViaPrivateKey(keyContent, () => {
+            ee.initialize(null, null,
+                () => {
+                    console.log("GEE: Successfully initialized.");
+                    geeInitialized = true;
+                    resolve(true);
+                },
+                (err: any) => {
+                    console.error("GEE: Initialization failed:", err);
+                    resolve(false);
+                }
+            );
+        }, (err: any) => {
+            console.error("GEE: Authentication failed:", err);
+            resolve(false);
+        });
+    });
 }
 
 // Generate deterministic mock data based on location
