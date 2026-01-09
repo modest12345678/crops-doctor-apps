@@ -1,26 +1,28 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Gemini client
-let genAI: GoogleGenerativeAI | null = null;
+// Initialize Groq client (using OpenAI SDK compatibility)
+let groqClient: OpenAI | null = null;
 
-function getGeminiClient() {
-  if (!genAI) {
-    const apiKey = process.env.GOOGLE_API_KEY;
+function getGroqClient() {
+  if (!groqClient) {
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      throw new Error("GOOGLE_API_KEY is not set in environment variables");
+      throw new Error("GROQ_API_KEY is not set in environment variables");
     }
-    genAI = new GoogleGenerativeAI(apiKey);
+    groqClient = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://api.groq.com/openai/v1"
+    });
   }
-  return genAI;
+  return groqClient;
 }
 
-// Helper to get the model
-function getModel(modelName: string = "gemini-1.5-flash-002") {
-  const client = getGeminiClient();
-  return client.getGenerativeModel({ model: modelName });
+// Helper to get the model name
+function getModel(type: "vision" | "text" = "text") {
+  return type === "vision" ? "llama-3.2-11b-vision-preview" : "llama3-70b-8192";
 }
 
 export interface DiseaseAnalysis {
@@ -122,7 +124,8 @@ export async function analyzeCropDisease(
   language: "en" | "bn" = "en"
 ): Promise<DiseaseAnalysis> {
   try {
-    const model = getModel("gemini-1.5-flash-002");
+    const client = getGroqClient();
+    const model = getModel("vision");
 
     const cropInfo = cropDiseaseInfo[cropType];
     const diseaseList = cropInfo.diseases.map(disease => `- ${disease}`).join('\n');
@@ -136,12 +139,13 @@ export async function analyzeCropDisease(
 ${languageInstruction}
 
 A farmer has uploaded an image of their ${cropType} plant and suspects it may have a disease.
-(Note: Using image description capability currently, assuming image context is 'potentially diseased plant')
 
 Common ${cropType} diseases include:
 ${diseaseList}
 
-Based on your expertise, provide a general analysis for ${cropType} plants in JSON format:
+Based on your expertise and the image provided, provide a general analysis for ${cropType} plants in JSON format.
+Ensure your response is valid JSON only, without markdown code blocks.
+
 {
   "diseaseName": "Most common disease for ${cropType} or 'Healthy'",
   "confidence": 70,
@@ -161,32 +165,27 @@ IMPORTANT:
 - Return 'treatment' as an ARRAY of strings, where each string is a detailed paragraph/step.
 - Ensure the language is natural and easy for a farmer to understand.`;
 
-    // Note: To truly use the image, we would convert base64 to a GenerativePart.
-    // However, the original code commented "Groq doesn't support vision models".
-    // Gemini supports vision! Let's strip the data URI prefix if present and send the image.
-    // If base64Image is a pure string or data URL.
-
-    const parts: any[] = [{ text: prompt }];
-
-    // Simple heuristic to check if it's a data URL or raw base64
-    const base64Data = base64Image.replace(/^data:image\/\w+;base64,/, "");
-
-    if (base64Data) {
-      parts.push({
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg"
-        }
-      });
+    // Process base64 image
+    let imageUrl = base64Image;
+    if (!base64Image.startsWith("data:")) {
+      imageUrl = `data:image/jpeg;base64,${base64Image}`;
     }
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts }],
-      generationConfig: { responseMimeType: "application/json" }
+    const response = await client.chat.completions.create({
+      model: model,
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: imageUrl } },
+          ],
+        },
+      ],
+      response_format: { type: "json_object" },
     });
 
-    const response = result.response;
-    const text = response.text();
+    const text = response.choices[0]?.message?.content || "{}";
 
     let parsedResult: any;
     try {
@@ -220,7 +219,8 @@ export async function analyzePotatoDisease(base64Image: string): Promise<Disease
 
 export async function chatWithAI(message: string, language: "en" | "bn" = "en"): Promise<{ response: string }> {
   try {
-    const model = getModel("gemini-1.5-flash-002");
+    const client = getGroqClient();
+    const model = getModel("text");
 
     const languageInstruction = language === "bn"
       ? "The user's interface is in Bengali. You MUST reply in Bengali (বাংলা) unless explicitly asked to speak English."
@@ -245,10 +245,14 @@ Provide a helpful, accurate, and concise response.
 - If the question is about your language capabilities (e.g., "Can you speak Bangla?"), answer it affirmatively in that language.
 - Only decline if the question is completely unrelated to agriculture OR your capabilities (e.g., "Who is the president?", "Write code").`;
 
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const response = await client.chat.completions.create({
+      model: model,
+      messages: [{ role: "user", content: prompt }],
+    });
 
-    return { response: text || "I apologize, but I couldn't generate a response at this time." };
+    const text = response.choices[0]?.message?.content || "I apologize, but I couldn't generate a response at this time.";
+
+    return { response: text };
   } catch (error: any) {
     console.error("Error in chatWithAI:", error);
     throw new Error(`Failed to get chat response: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -306,7 +310,8 @@ export async function calculateFertilizer(
   language: "en" | "bn" = "en"
 ): Promise<FertilizerRecommendation> {
   try {
-    const model = getModel("gemini-1.5-flash-002");
+    const client = getGroqClient();
+    const model = getModel("text");
 
     // Convert bigha to acres for consistency (1 bigha ≈ 0.33 acres)
     const areaInAcres = unit === "bigha" ? area * 0.33 : area;
@@ -354,13 +359,13 @@ IMPORTANT:
 - "perUnitList" should contain the STANDARD rate per 1 ${unit} for reference.
 - Return arrays for recommendations, organicOptions, and perUnitList.`;
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { responseMimeType: "application/json" }
+    const response = await client.chat.completions.create({
+      model: model,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
     });
 
-    const response = result.response;
-    const text = response.text();
+    const text = response.choices[0]?.message?.content || "{}";
 
     let parsedResult: any;
     try {
