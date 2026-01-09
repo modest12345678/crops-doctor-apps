@@ -12,6 +12,19 @@ const detectRequestSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Health check endpoint for debugging
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "ok",
+      env: {
+        DATABASE_URL: !!process.env.DATABASE_URL,
+        GROQ_API_KEY: !!process.env.GROQ_API_KEY,
+        GOOGLE_PRIVATE_KEY: !!process.env.GOOGLE_PRIVATE_KEY,
+        NODE_ENV: process.env.NODE_ENV
+      }
+    });
+  });
+
   // Disease detection endpoint
   app.post("/api/detect", async (req, res) => {
     try {
