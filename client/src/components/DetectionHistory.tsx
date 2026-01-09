@@ -35,7 +35,7 @@ export default function DetectionHistory() {
             </CardHeader>
             <CardContent>
                 <Tabs defaultValue="disease" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 gap-2 mb-4 h-auto">
                         <TabsTrigger value="disease">{t.diseaseDetectorButton || "Disease"}</TabsTrigger>
                         <TabsTrigger value="fertilizer">{t.fertilizerCalculatorButton || "Fertilizer"}</TabsTrigger>
                         <TabsTrigger value="soil">{t.soilFertility || "Soil"}</TabsTrigger>
