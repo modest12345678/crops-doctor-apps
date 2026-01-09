@@ -22,7 +22,8 @@ function getGroqClient() {
 
 // Helper to get the model name
 function getModel(type: "vision" | "text" = "text") {
-  return type === "vision" ? "llama-3.2-90b-vision-preview" : "llama3-70b-8192";
+  // Llama 4 Scout supports both vision and text
+  return type === "vision" ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama3-70b-8192";
 }
 
 export interface DiseaseAnalysis {
