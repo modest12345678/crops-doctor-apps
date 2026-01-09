@@ -127,11 +127,6 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
                                                 : "bg-muted"
                                         )}>
                                             {msg.content}
-                                            {msg.role === "ai" && (
-                                                <p className="text-[10px] text-muted-foreground mt-2 border-t pt-2 opacity-70 italic">
-                                                    {t.satelliteDisclaimer}
-                                                </p>
-                                            )}
                                         </div>
                                     </div>
                                 ))}

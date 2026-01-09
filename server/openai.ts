@@ -20,10 +20,10 @@ function getGroqClient() {
   return groqClient;
 }
 
-// Helper to get the model name
+// Helper to get the model name - using Llama 4 Scout for both (multimodal model)
 function getModel(type: "vision" | "text" = "text") {
-  // Llama 4 Scout supports both vision and text
-  return type === "vision" ? "meta-llama/llama-4-scout-17b-16e-instruct" : "llama3-70b-8192";
+  // Llama 4 Scout supports both vision and text, use it for all AI tasks
+  return "meta-llama/llama-4-scout-17b-16e-instruct";
 }
 
 export interface DiseaseAnalysis {
