@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageSquare, Send, X, Loader2, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation } from "@tanstack/react-query";
@@ -83,25 +83,23 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
     };
 
     return (
-        <div className="fixed bottom-24 right-0 z-50 flex flex-col items-end">
-            {isOpen && (
-                <Card className="w-[350px] md:w-[400px] h-[500px] shadow-xl mb-4 flex flex-col animate-in slide-in-from-bottom-10 fade-in duration-300 mr-4">
-                    <CardHeader className="flex flex-row items-center justify-between p-4 border-b bg-primary/5">
-                        <CardTitle className="flex items-center gap-2 text-lg">
+        <>
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0">
+                    <DialogHeader className="p-6 pb-4">
+                        <DialogTitle className="flex items-center gap-2 text-xl">
                             <Bot className="w-6 h-6 text-primary" />
                             {t.aiAssistant}
-                        </CardTitle>
-                        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="h-8 w-8">
-                            <X className="w-4 h-4" />
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="flex-1 p-0 flex flex-col overflow-hidden">
-                        <ScrollArea className="flex-1 p-4">
-                            <div className="space-y-4">
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+                        <ScrollArea className="flex-1 px-6">
+                            <div className="space-y-4 pb-4">
                                 {messages.length === 0 && (
-                                    <div className="text-center text-muted-foreground py-8 px-4">
-                                        <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                        <p className="text-sm">
+                                    <div className="text-center text-muted-foreground py-12 px-4">
+                                        <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                        <p className="text-base">
                                             {t.chatWelcome}
                                         </p>
                                     </div>
@@ -110,18 +108,18 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
                                     <div
                                         key={index}
                                         className={cn(
-                                            "flex gap-3 text-sm",
+                                            "flex gap-3",
                                             msg.role === "user" ? "flex-row-reverse" : "flex-row"
                                         )}
                                     >
                                         <div className={cn(
-                                            "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
                                             msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                                         )}>
-                                            {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                            {msg.role === "user" ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                                         </div>
                                         <div className={cn(
-                                            "rounded-lg p-3 max-w-[80%]",
+                                            "rounded-lg p-4 max-w-[75%]",
                                             msg.role === "user"
                                                 ? "bg-primary text-primary-foreground"
                                                 : "bg-muted"
@@ -132,18 +130,18 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
                                 ))}
                                 {chatMutation.isPending && (
                                     <div className="flex gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0">
-                                            <Bot className="w-4 h-4" />
+                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                            <Bot className="w-5 h-5" />
                                         </div>
-                                        <div className="bg-muted rounded-lg p-3">
-                                            <Bot className="w-4 h-4 text-primary animate-robot-bounce" />
+                                        <div className="bg-muted rounded-lg p-4">
+                                            <Bot className="w-5 h-5 text-primary animate-robot-bounce" />
                                         </div>
                                     </div>
                                 )}
                                 <div ref={scrollRef} />
                             </div>
                         </ScrollArea>
-                        <div className="p-4 border-t bg-background">
+                        <div className="p-6 pt-4 border-t bg-background">
                             <div className="flex gap-2">
                                 <Input
                                     placeholder={t.chatPlaceholder}
@@ -162,12 +160,12 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
                                 </Button>
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
-            )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <div
-                className="flex items-center"
+                className="fixed bottom-24 right-0 z-50 flex items-center"
                 onMouseEnter={() => setShowLabel(true)}
                 onMouseLeave={() => setShowLabel(false)}
             >
@@ -184,6 +182,6 @@ export function ChatInterface({ isOpen: propIsOpen, onOpenChange, alwaysShowLabe
                     {isOpen ? <X className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
                 </Button>
             </div>
-        </div>
+        </>
     );
 }
