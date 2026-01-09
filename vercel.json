@@ -1,14 +1,31 @@
 {
     "version": 2,
     "installCommand": "npm install --legacy-peer-deps",
-    "rewrites": [
+    "buildCommand": "npm run build",
+    "builds": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api/index.ts"
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist/client"
+            }
         },
         {
-            "source": "/(.*)",
-            "destination": "/"
+            "src": "api/index.ts",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/index.ts"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/index.html"
         }
     ]
 }
