@@ -22,7 +22,7 @@ function getGroqClient() {
 
 // Helper to get the model name
 function getModel(type: "vision" | "text" = "text") {
-  return type === "vision" ? "llama-3.2-11b-vision-preview" : "llama3-70b-8192";
+  return type === "vision" ? "llama-3.2-90b-vision-preview" : "llama3-70b-8192";
 }
 
 export interface DiseaseAnalysis {
