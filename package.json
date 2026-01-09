@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
     "build": "npm run build:client && npm run build:server",
-    "build:client": "vite build --outDir dist/client --emptyOutDir",
+    "build:client": "vite build --emptyOutDir",
     "build:server": "tsc -p tsconfig.server.json",
     "start": "cross-env NODE_ENV=production node dist/server/index.js",
     "db:push": "drizzle-kit push",
