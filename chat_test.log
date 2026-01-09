@@ -1,0 +1,6 @@
+Testing Polyglot Chat...
+
+1. Testing Bengali query with English context...
+User Query: আমি কি বাংলায় কথা বলতে পারি?
+AI Response: হ্যাঁ, আপনি বাংলায় কথা বলতে পারেন। আমি বাংলায় কথা বলতে পারি এবং আপনাকে কৃষি সম্পর্কিত সমস্যা বা প্রশ্নের উত্তর দিতে পারি। আপনার কৃষি সম্পর্কিত প্রশ্ন কি?
+SUCCESS: AI responded in Bengali.

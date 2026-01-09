@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import type { TrainingData } from "@shared/schema";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function Training() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -17,6 +18,7 @@ export default function Training() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useLanguage();
 
   const { data: trainingDataList, isLoading } = useQuery<TrainingData[]>({
     queryKey: ["/api/training"],
@@ -29,8 +31,8 @@ export default function Training() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/training"] });
       toast({
-        title: "Training Data Submitted!",
-        description: "Thank you for helping improve the AI model",
+        title: t.trainingSubmitted,
+        description: t.trainingSubmittedDesc,
       });
       setSelectedImage(null);
       setDiseaseName("");
@@ -39,7 +41,7 @@ export default function Training() {
     },
     onError: (error: Error) => {
       toast({
-        title: "Submission Failed",
+        title: t.submissionFailed,
         description: error.message,
         variant: "destructive",
       });
@@ -74,10 +76,10 @@ export default function Training() {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
             <GraduationCap className="w-8 h-8" />
-            Train the AI
+            {t.trainAI}
           </h1>
           <p className="text-muted-foreground">
-            Help improve detection accuracy by submitting labeled images of potato diseases
+            {t.trainAIDescription}
           </p>
         </div>
 
@@ -85,15 +87,15 @@ export default function Training() {
           <div>
             <Card data-testid="card-training-form">
               <CardHeader>
-                <CardTitle>Submit Training Data</CardTitle>
+                <CardTitle>{t.submitTrainingData}</CardTitle>
                 <CardDescription>
-                  Upload a clear image and provide accurate disease information
+                  {t.submitDescription}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="image">Disease Image</Label>
+                    <Label htmlFor="image">{t.diseaseImage}</Label>
                     {!selectedImage ? (
                       <div
                         className="border-2 border-dashed rounded-lg p-8 text-center hover-elevate active-elevate-2 transition-colors cursor-pointer"
@@ -102,9 +104,9 @@ export default function Training() {
                       >
                         <Upload className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground mb-1">
-                          Click to upload image
+                          {t.clickToUploadImage}
                         </p>
-                        <p className="text-xs text-muted-foreground">PNG, JPG, WEBP</p>
+                        <p className="text-xs text-muted-foreground">{t.fileTypes}</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -127,7 +129,7 @@ export default function Training() {
                           }}
                           data-testid="button-change-image"
                         >
-                          Change Image
+                          {t.changeImage}
                         </Button>
                       </div>
                     )}
@@ -143,10 +145,10 @@ export default function Training() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="diseaseName">Disease Name *</Label>
+                    <Label htmlFor="diseaseName">{t.diseaseName} *</Label>
                     <Input
                       id="diseaseName"
-                      placeholder="e.g., Late Blight, Early Blight, etc."
+                      placeholder={t.diseaseNamePlaceholder}
                       value={diseaseName}
                       onChange={(e) => setDiseaseName(e.target.value)}
                       required
@@ -155,10 +157,10 @@ export default function Training() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="notes">Additional Notes (Optional)</Label>
+                    <Label htmlFor="notes">{t.additionalNotes}</Label>
                     <Textarea
                       id="notes"
-                      placeholder="Add any observations about symptoms, conditions, or other relevant details..."
+                      placeholder={t.notesPlaceholder}
                       value={userNotes}
                       onChange={(e) => setUserNotes(e.target.value)}
                       rows={4}
@@ -175,12 +177,12 @@ export default function Training() {
                     {submitMutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Submitting...
+                        {t.submitting}
                       </>
                     ) : (
                       <>
                         <CheckCircle2 className="w-4 h-4 mr-2" />
-                        Submit Training Data
+                        {t.submit}
                       </>
                     )}
                   </Button>
@@ -192,9 +194,9 @@ export default function Training() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>Your Contributions</CardTitle>
+                <CardTitle>{t.yourContributions}</CardTitle>
                 <CardDescription>
-                  {isLoading ? "Loading..." : `${trainingDataList?.length || 0} training samples submitted`}
+                  {isLoading ? t.analyzing : t.samplesSubmitted(trainingDataList?.length || 0)}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -207,7 +209,7 @@ export default function Training() {
                 {!isLoading && (!trainingDataList || trainingDataList.length === 0) && (
                   <div className="text-center py-8 text-muted-foreground">
                     <GraduationCap className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                    <p className="text-sm">No training data submitted yet</p>
+                    <p className="text-sm">{t.noSamples}</p>
                   </div>
                 )}
 

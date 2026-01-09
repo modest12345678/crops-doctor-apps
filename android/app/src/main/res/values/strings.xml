@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CropsDoctorAI</string>
+    <string name="title_activity_main">CropsDoctorAI</string>
+    <string name="package_name">crops.doctor</string>
+    <string name="custom_url_scheme">crops.doctor</string>
+</resources>

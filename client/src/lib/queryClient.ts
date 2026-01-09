@@ -1,4 +1,9 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { Capacitor } from "@capacitor/core";
+
+const BASE_URL = import.meta.env.VITE_API_URL || (Capacitor.isNativePlatform()
+  ? "http://192.168.0.145:5000"
+  : "");
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -12,7 +17,7 @@ export async function apiRequest<T = void>(
   url: string,
   data?: unknown | undefined,
 ): Promise<T> {
-  const res = await fetch(url, {
+  const res = await fetch(`${BASE_URL}${url}`, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -20,11 +25,11 @@ export async function apiRequest<T = void>(
   });
 
   await throwIfResNotOk(res);
-  
+
   if (res.status === 204) {
     return undefined as T;
   }
-  
+
   return await res.json();
 }
 
@@ -33,18 +38,18 @@ export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
+    async ({ queryKey }) => {
+      const res = await fetch(`${BASE_URL}${queryKey.join("/")}`, {
+        credentials: "include",
+      });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
-    }
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
 
-    await throwIfResNotOk(res);
-    return await res.json();
-  };
+      await throwIfResNotOk(res);
+      return await res.json();
+    };
 
 export const queryClient = new QueryClient({
   defaultOptions: {

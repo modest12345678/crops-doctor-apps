@@ -4,3 +4,25 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
+.env.*
+
+# Secrets
+server/services/private-key.json
+google-services.json
+android/app/google-services.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.iml
+
+# OS
+Thumbs.db

@@ -13,6 +13,29 @@ export default function History() {
   });
   const { language, t } = useLanguage();
 
+  const cropOptions = [
+    { value: "potato", label: t.crops.potato, icon: "🥔" },
+    { value: "tomato", label: t.crops.tomato, icon: "🍅" },
+    { value: "corn", label: t.crops.corn, icon: "🌽" },
+    { value: "wheat", label: t.crops.wheat, icon: "🌾" },
+    { value: "rice", label: t.crops.rice, icon: "🍚" },
+    { value: "jute", label: t.crops.jute, icon: "🌿" },
+    { value: "sugarcane", label: t.crops.sugarcane, icon: "🎋" },
+    { value: "tea", label: t.crops.tea, icon: "🍵" },
+    { value: "mustard", label: t.crops.mustard, icon: "🌼" },
+    { value: "mango", label: t.crops.mango, icon: "🥭" },
+    { value: "banana", label: t.crops.banana, icon: "🍌" },
+    { value: "brinjal", label: t.crops.brinjal, icon: "🍆" },
+    { value: "chili", label: t.crops.chili, icon: "🌶️" },
+    { value: "onion", label: t.crops.onion, icon: "🧅" },
+    { value: "garlic", label: t.crops.garlic, icon: "🧄" },
+    { value: "ginger", label: t.crops.ginger, icon: "🫚" },
+    { value: "turmeric", label: t.crops.turmeric, icon: "🧡" },
+    { value: "lentil", label: t.crops.lentil, icon: "🍲" },
+    { value: "watermelon", label: t.crops.watermelon, icon: "🍉" },
+    { value: "papaya", label: t.crops.papaya, icon: "🍈" },
+  ];
+
   const dateLocale = language === "bn" ? bn : enUS;
 
   return (
@@ -60,7 +83,7 @@ export default function History() {
                     />
                     <div className="absolute top-2 left-2">
                       <Badge variant="default" className="bg-primary/90 backdrop-blur-sm capitalize" data-testid={`badge-crop-${detection.id}`}>
-                        {detection.cropType}
+                        {cropOptions.find(c => c.value === detection.cropType)?.label || detection.cropType}
                       </Badge>
                     </div>
                     <div className="absolute top-2 right-2">
