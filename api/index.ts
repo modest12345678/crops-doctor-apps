@@ -1,4 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 // Global flag to track if app is initialized
 let isAppInitialized = false;
@@ -10,8 +14,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!isAppInitialized) {
             console.log('Initializing serverless function...');
 
-            // Dynamically import the compiled server
-            const serverModule = await import('../dist/server/index.js');
+            // Import directly from TypeScript source (Vercel compiles it)
+            const serverModule = await import('../server/index.js');
 
             // Setup the app
             await serverModule.setupApp();
