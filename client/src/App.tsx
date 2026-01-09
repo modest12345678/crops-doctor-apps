@@ -34,8 +34,8 @@ function Navigation() {
         <div className="flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity px-2 py-1 rounded-md" data-testid="logo">
-              <div className="bg-white rounded-full p-0.5 h-14 w-14 flex items-center justify-center overflow-hidden shadow-md ring-2 ring-white/20">
-                <img src="/logo.png" alt="AI Crops-Doctor Logo" className="w-full h-full object-cover" />
+              <div className="h-14 w-14 flex items-center justify-center">
+                <img src="/logo.png" alt="AI Crops-Doctor Logo" className="w-full h-full object-contain" />
               </div>
               <span className="font-bold text-2xl tracking-tight shadow-sm stroke-black hidden sm:block font-display">{t.appTitle}</span>
             </div>
