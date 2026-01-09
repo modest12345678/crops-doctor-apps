@@ -1,9 +1,18 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 import express, { type Request, Response, NextFunction } from "express";
-// Trigger reload 6
 import { registerRoutes } from "./routes.js";
-import { setupVite, serveStatic, log } from "./vite.js";
+
+// Inline log function to avoid importing vite.js at top level
+function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 
 const app = express();
 
@@ -61,11 +70,12 @@ const setupApp = async () => {
     throw err;
   });
 
-  if (app.get("env") === "development") {
+  // Only load Vite in development - this avoids Rollup dependency in production
+  if (process.env.NODE_ENV === "development") {
+    const { setupVite } = await import("./vite.js");
     await setupVite(app, server);
-  } else {
-    serveStatic(app);
   }
+  // In production/serverless, don't serve static files - Vercel handles that
 
   return server;
 };
@@ -85,3 +95,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export { app, setupApp };
+
