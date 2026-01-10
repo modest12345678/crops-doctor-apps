@@ -15,9 +15,17 @@ import AddStage from "@/pages/add-stage";
 import DetectPage from "@/pages/detect";
 import SoilFertility from "@/pages/soil-fertility";
 import WeatherForecast from "@/pages/weather";
-import { Leaf, Home as HomeIcon, History as HistoryIcon, GraduationCap, Languages, Stethoscope, Sprout, FileText } from "lucide-react";
+import { Leaf, Home as HomeIcon, History as HistoryIcon, GraduationCap, Languages, Stethoscope, Sprout, FileText, LayoutGrid, CloudRain, Calendar as CalendarIcon, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function Navigation() {
   const [location] = useLocation();
@@ -25,7 +33,6 @@ function Navigation() {
 
   const navItems = [
     { path: "/", label: "Home", icon: HomeIcon, testId: "nav-home" },
-    { path: "/history", label: t.navHistory, icon: HistoryIcon, testId: "nav-history" },
   ];
 
   return (
@@ -79,6 +86,56 @@ function Navigation() {
                 </Link>
               );
             })}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="gap-2 text-primary-foreground hover:bg-white/10 hover:text-white" data-testid="nav-tools">
+                  <LayoutGrid className="w-5 h-5" />
+                  <span className="hidden sm:inline">{t.actions || "Tools"}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>{t.actions || "Tools"}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <Link href="/detect">
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <Stethoscope className="w-4 h-4" />
+                    <span>{t.diseaseDetectorButton || "Disease Detector"}</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <Link href="/fertilizer">
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <Sprout className="w-4 h-4" />
+                    <span>{t.fertilizerCalculatorButton || "Fertilizer Calculator"}</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <Link href="/soil-fertility">
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <MapPin className="w-4 h-4" />
+                    <span>{t.soilFertility || "Soil Analysis"}</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <Link href="/weather">
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <CloudRain className="w-4 h-4" />
+                    <span>{t.weatherForecast || "Weather"}</span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <DropdownMenuSeparator />
+
+                <Link href="/history">
+                  <DropdownMenuItem className="cursor-pointer gap-2">
+                    <HistoryIcon className="w-4 h-4" />
+                    <span>{t.navHistory || "History"}</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
