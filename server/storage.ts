@@ -38,6 +38,24 @@ export interface IStorage {
   getFertilizerHistory(): Promise<FertilizerHistory[]>;
   createSoilHistory(data: InsertSoilHistory): Promise<SoilHistory>;
   getSoilHistory(): Promise<SoilHistory[]>;
+
+  // Admin methods
+  getUsers(): Promise<Array<UserInfo & { analysisCount: number; lastSeen: string }>>;
+  getErrorLogs(): Promise<any[]>;
+  getAllData(): Promise<{
+    users: any[];
+    detections: Detection[];
+    fertilizerHistory: FertilizerHistory[];
+    soilHistory: SoilHistory[];
+    errorLogs: any[];
+    stats: {
+      totalUsers: number;
+      totalDetections: number;
+      totalFertilizerRecords: number;
+      totalSoilRecords: number;
+      totalErrors: number;
+    };
+  }>;
 }
 
 export class MemStorage implements IStorage {
@@ -223,6 +241,37 @@ export class MemStorage implements IStorage {
     return Array.from(this.soilHistory.values()).sort((a, b) =>
       b.createdAt.getTime() - a.createdAt.getTime()
     );
+  }
+
+  // Admin methods
+  async getUsers() {
+    return Array.from(this.users.values());
+  }
+
+  async getErrorLogs() {
+    return this.errorLogs;
+  }
+
+  async getAllData() {
+    const users = await this.getUsers();
+    const detections = await this.getDetections();
+    const fertilizerHistory = await this.getFertilizerHistory();
+    const soilHistory = await this.getSoilHistory();
+
+    return {
+      users,
+      detections,
+      fertilizerHistory,
+      soilHistory,
+      errorLogs: this.errorLogs,
+      stats: {
+        totalUsers: users.length,
+        totalDetections: detections.length,
+        totalFertilizerRecords: fertilizerHistory.length,
+        totalSoilRecords: soilHistory.length,
+        totalErrors: this.errorLogs.length
+      }
+    };
   }
 }
 

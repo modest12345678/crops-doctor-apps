@@ -333,6 +333,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Endpoints
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const users = await storage.getUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Admin users error:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/stats", async (req, res) => {
+    try {
+      const data = await storage.getAllData();
+      res.json(data.stats);
+    } catch (error) {
+      console.error("Admin stats error:", error);
+      res.status(500).json({ message: "Failed to fetch statistics" });
+    }
+  });
+
+  app.get("/api/admin/export", async (req, res) => {
+    try {
+      const data = await storage.getAllData();
+      res.json(data);
+    } catch (error) {
+      console.error("Admin export error:", error);
+      res.status(500).json({ message: "Failed to export data" });
+    }
+  });
+
+  app.get("/api/admin/errors", async (req, res) => {
+    try {
+      const errors = await storage.getErrorLogs();
+      res.json(errors);
+    } catch (error) {
+      console.error("Admin errors error:", error);
+      res.status(500).json({ message: "Failed to fetch error logs" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
