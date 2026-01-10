@@ -333,6 +333,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug DB Connection
+  app.get("/api/debug-db", async (req, res) => {
+    try {
+      if (!process.env.DATABASE_URL) {
+        return res.status(400).json({ status: "error", message: "DATABASE_URL is not set" });
+      }
+
+      // Try to connect dynamically
+      const { Pool, neonConfig } = await import('@neondatabase/serverless');
+      const ws = (await import('ws')).default;
+      neonConfig.webSocketConstructor = ws;
+
+      const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+      const client = await pool.connect();
+      try {
+        const result = await client.query('SELECT NOW() as time');
+        res.json({ status: "ok", time: result.rows[0].time, connectionString: "Valid" });
+      } finally {
+        client.release();
+        await pool.end();
+      }
+    } catch (error: any) {
+      console.error("DB Debug Error:", error);
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+        stack: error.stack,
+        urlConfigured: !!process.env.DATABASE_URL
+      });
+    }
+  });
+
   // Admin Endpoints
   app.get("/api/admin/users", async (req, res) => {
     try {
