@@ -25,6 +25,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Version check endpoint to verify deployment
+  app.get("/api/version", (req, res) => {
+    res.json({
+      timestamp: new Date().toISOString(),
+      version: "1.1.0",
+      description: "Added Tools menu and DB debug"
+    });
+  });
+
   // Disease detection endpoint
   app.post("/api/detect", async (req, res) => {
     try {
