@@ -60,6 +60,15 @@ export const soilHistory = pgTable("soil_history", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const users = pgTable("users", {
+  ip: varchar("ip").primaryKey(),
+  deviceInfo: text("device_info"), // Stored as JSON string
+  userAgent: text("user_agent"),
+  analysisCount: integer("analysis_count").notNull().default(0),
+  lastSeen: timestamp("last_seen").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const insertDetectionSchema = createInsertSchema(detections).omit({
   id: true,
   createdAt: true,
