@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useLanguage } from "@/lib/LanguageContext";
 import { FloatingActions } from "@/components/FloatingActions";
-import { Calendar, Bot, ChevronRight, MapPin, CloudRain } from "lucide-react";
+import { Calendar, Bot, ChevronRight, MapPin, CloudRain, Bug } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
@@ -88,6 +88,24 @@ export default function Home() {
                         </span>
                         <span className="text-white/80 text-sm font-medium mt-1 text-center max-w-sm">
                           {t.soilFertilityDesc}
+                        </span>
+                      </div>
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="w-full lg:w-[48%]">
+                  <Link href="/pesticide">
+                    <Button className="w-full text-lg h-32 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 shadow-lg group border-0 flex flex-col items-center justify-center p-4 gap-2">
+                      <div className="h-14 w-14 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm shrink-0 shadow-inner mb-1">
+                        <Bug className="h-10 w-10 text-white filter drop-shadow-md group-hover:scale-110 transition-transform duration-300" />
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <span className="font-bold text-xl leading-none text-white shadow-sm text-center">
+                          {t.pesticideCalculator}
+                        </span>
+                        <span className="text-white/80 text-sm font-medium mt-1 text-center">
+                          {t.calibration}
                         </span>
                       </div>
                     </Button>

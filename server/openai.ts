@@ -412,3 +412,105 @@ IMPORTANT:
     throw new Error(`Failed to calculate fertilizer: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export interface PesticideRecommendation {
+  cropName: string;
+  area: number;
+  unit: string;
+  recommendations: string[];
+  calibration: {
+    waterRequired: string; // e.g. "Total 200 Liters"
+    numberOfTanks: string; // e.g. "12 Tanks (16L each)"
+    dosePerTank: string;   // e.g. "50ml per tank"
+  };
+  safetyPrecautions: string[];
+}
+
+export async function calculatePesticide(
+  cropType: CropType,
+  area: number,
+  unit: "acre" | "bigha",
+  language: "en" | "bn" = "en"
+): Promise<PesticideRecommendation> {
+  try {
+    const client = getGroqClient();
+    const model = getModel("text");
+
+    // Convert bigha to acres for consistency (1 bigha ≈ 0.33 acres)
+    const areaInAcres = unit === "bigha" ? area * 0.33 : area;
+
+    const cropInfo = cropDiseaseInfo[cropType];
+    const languageInstruction = language === "bn"
+      ? "Provide all responses in Bengali (বাংলা) language. Use very natural, fluent, and encouraging farmer-friendly language."
+      : "Provide all responses in English language. Use very natural, fluent, and encouraging farmer-friendly language.";
+
+    const prompt = `You are an expert agricultural consultant specializing in Plant Protection and Pesticide Application in Bangladesh.
+    
+    ${languageInstruction}
+
+    The farmer wants to apply pesticide (for general protection or specific common pest) on ${cropType} for ${area} ${unit} (approx ${areaInAcres.toFixed(2)} acres).
+    
+    CRITICAL INSTRUCTION: Provide "CALIBRATION" data for the application.
+    - Assume standard backpack sprayer size is 16 Liters.
+    - Calculate TOTAL water needed for ${area} ${unit}.
+    - Calculate how many 16L spray tanks are needed.
+    - Calculate amount of pesticide per tank.
+
+    Provide JSON with:
+    {
+      "cropName": "crop name",
+      "area": ${area},
+      "unit": "${unit}",
+      "recommendations": [
+        "1. Identify Pest: Look for [Common Pest Name]...",
+        "2. Select Pesticide: Use [Generic Name] (Trade Name like [Example])...",
+        "3. Application: Spray during [Time of Day]..."
+      ],
+      "calibration": {
+        "waterRequired": "Total Liters needed for ${area} ${unit}",
+        "numberOfTanks": "Number of 16L tanks required",
+        "dosePerTank": "Amount (ml/g) per 16L tank"
+      },
+      "safetyPrecautions": [
+        "Wear masks and gloves...",
+        "Do not spray against the wind..."
+      ]
+    }
+    
+    IMPORTANT:
+    - Be precise with numbers in calibration.
+    - Format numbers localized to the language (Bengali digits if bn).
+    - Return valid JSON only.`;
+
+    const response = await client.chat.completions.create({
+      model: model,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
+
+    const text = response.choices[0]?.message?.content || "{}";
+
+    let parsedResult: any;
+    try {
+      parsedResult = JSON.parse(text);
+    } catch (parseError) {
+      console.error("JSON Parse Error:", parseError);
+      throw new Error("Failed to parse AI response");
+    }
+
+    const displayArea = language === "bn" ? toBengaliNumber(area) : area;
+
+    return {
+      cropName: parsedResult.cropName || cropType,
+      area: displayArea as any,
+      unit: unit,
+      recommendations: Array.isArray(parsedResult.recommendations) ? parsedResult.recommendations : [parsedResult.recommendations],
+      calibration: parsedResult.calibration || { waterRequired: "N/A", numberOfTanks: "N/A", dosePerTank: "N/A" },
+      safetyPrecautions: Array.isArray(parsedResult.safetyPrecautions) ? parsedResult.safetyPrecautions : ["Use caution."]
+    };
+
+  } catch (error: any) {
+    console.error(`Error calculating pesticide for ${cropType}:`, error);
+    throw new Error(`Failed to calculate pesticide: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

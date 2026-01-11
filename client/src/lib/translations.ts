@@ -5,6 +5,7 @@ export const translations = {
     appTitle: "AI Crops-Doctor",
     appDescription: "AI-Powered Protection & Nutrition for Your Crops",
     selectFunction: "Choose Your Farming Tool",
+    actions: "Tools",
     selectCrop: "Select Crop:",
     smartFarmingTools: "Smart Farming Tools",
     aiAssistant: "AI Crop Doctor",
@@ -148,6 +149,15 @@ export const translations = {
     crop_Tomato: "Tomato",
     crop_LocalVegetables: "Local Vegetables",
     crop_Pineapple: "Pineapple",
+
+    // Pesticide Calculator
+    pesticideCalculator: "Pesticide Calculator",
+    pesticideDescription: "Calculate pesticide Calibration: Water volume, Tanks needed & Dosage.",
+    calibration: "Application Calibration",
+    waterRequired: "Total Water Required",
+    numberOfTanks: "Tanks Needed (16L)",
+    dosePerTank: "Dose Per Tank",
+    safetyPrecautions: "Safety Precautions",
 
     // Soil Deficiency Explanations (Why Necessary)
     reason_Nitrogen: "Essential for leaf growth and chlorophyll production.",
@@ -371,6 +381,15 @@ export const translations = {
     crop_Tomato: "টমেটো",
     crop_LocalVegetables: "স্থানীয় সবজি",
     crop_Pineapple: "আনারস",
+
+    // Pesticide Calculator
+    pesticideCalculator: "কীটনাশক ক্যালকুলেটর",
+    pesticideDescription: "কীটনাশক প্রয়োগের সঠিক পরিমাপ: পানির পরিমাণ, ট্যাঙ্কের সংখ্যা এবং ডোজ।",
+    calibration: "স্প্রে ক্যালিব্রেশন",
+    waterRequired: "মোট পানি প্রয়োজন",
+    numberOfTanks: "ট্যাঙ্ক সংখ্যা (১৬ লিটার)",
+    dosePerTank: "প্রতি ট্যাঙ্কে ডোজ",
+    safetyPrecautions: "নিরাপত্তা সতর্কতা",
 
     // Soil Deficiency Explanations (Why Necessary)
     reason_Nitrogen: "পাতার বৃদ্ধি এবং ক্লোরোফিল তৈরির জন্য অপরিহার্য।",

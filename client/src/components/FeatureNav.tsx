@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Stethoscope, Sprout } from "lucide-react";
+import { Stethoscope, Sprout, Bug } from "lucide-react";
 import { useLanguage } from "@/lib/LanguageContext";
 
 export default function FeatureNav() {
@@ -28,6 +28,15 @@ export default function FeatureNav() {
                     >
                         <Sprout className="w-5 h-5" />
                         {t.fertilizerCalculator || "Fertilizer Calculator"}
+                    </Button>
+                </Link>
+                <Link href="/pesticide">
+                    <Button
+                        variant={isActive("/pesticide") ? "default" : "outline"}
+                        className="gap-2 text-base px-6"
+                    >
+                        <Bug className="w-5 h-5" />
+                        {t.pesticideCalculator || "Pesticide Calculator"}
                     </Button>
                 </Link>
             </div>

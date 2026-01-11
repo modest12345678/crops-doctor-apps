@@ -218,6 +218,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Pesticide calculator endpoint
+  app.post("/api/pesticide", async (req, res) => {
+    try {
+      const { cropType, area, unit, language } = req.body;
+
+      if (!cropType || !area || !unit) {
+        return res.status(400).json({ message: "cropType, area, and unit are required" });
+      }
+
+      if (unit !== "acre" && unit !== "bigha") {
+        return res.status(400).json({ message: "Unit must be 'acre' or 'bigha'" });
+      }
+
+      const { calculatePesticide } = await import("./openai.js");
+      const recommendations = await calculatePesticide(cropType, area, unit, language);
+
+      // Note: We might want to store this in history too, but for now we won't strictly enforce it unless requested.
+      // But let's log usage.
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+      if (ip) {
+        // reuse existing tracking if possible or just log
+      }
+
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Pesticide calculation error:", error);
+      res.status(500).json({ message: "Failed to calculate pesticide recommendations" });
+    }
+  });
+
   // Farming Cycles & Stages
   app.post("/api/farming-cycles", async (req, res) => {
     try {

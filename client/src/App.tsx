@@ -16,6 +16,7 @@ import AddStage from "@/pages/add-stage";
 import DetectPage from "@/pages/detect";
 import SoilFertility from "@/pages/soil-fertility";
 import WeatherForecast from "@/pages/weather";
+import Pesticide from "@/pages/pesticide";
 import { Leaf, Home as HomeIcon, History as HistoryIcon, GraduationCap, Languages, Stethoscope, Sprout, FileText, LayoutGrid, CloudRain, Calendar as CalendarIcon, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -178,6 +179,7 @@ function Router() {
       <Route path="/detect" component={DetectPage} />
       <Route path="/soil-fertility" component={SoilFertility} />
       <Route path="/weather" component={WeatherForecast} />
+      <Route path="/pesticide" component={Pesticide} />
       <Route component={NotFound} />
     </Switch>
   );
