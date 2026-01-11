@@ -149,7 +149,7 @@ function Footer() {
   const { t } = useLanguage();
   return (
     <footer className="border-t py-6 mt-auto bg-card/50 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-4 flex justify-center items-center gap-4 text-sm text-muted-foreground">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-4 text-sm text-muted-foreground">
         <span>© 2025 Crop Doctor AI</span>
         <span>•</span>
         <Link href="/whitepaper">
@@ -158,6 +158,7 @@ function Footer() {
             {t.whitepaper}
           </a>
         </Link>
+        <span className="text-xs opacity-50">v1.1.1 (Build: {new Date().toISOString().split('T')[0]})</span>
       </div>
     </footer>
   );
