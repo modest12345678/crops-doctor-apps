@@ -14,7 +14,7 @@ import FeatureNav from "@/components/FeatureNav";
 import { FloatingActions } from "@/components/FloatingActions";
 import { ProcessingAnimation } from "@/components/ProcessingAnimation";
 
-type CropType = "potato" | "tomato" | "corn" | "wheat" | "rice" | "jute" | "sugarcane" | "tea" | "mustard" | "mango" | "banana" | "brinjal" | "chili" | "onion" | "garlic" | "ginger" | "turmeric" | "lentil" | "watermelon" | "papaya";
+type CropType = "potato" | "tomato" | "corn" | "wheat" | "rice" | "jute" | "sugarcane" | "tea" | "mustard" | "mango" | "banana" | "brinjal" | "chili" | "onion" | "garlic" | "ginger" | "turmeric" | "lentil" | "watermelon" | "papaya" | "pineapple";
 type Unit = "acre" | "bigha";
 
 interface FertilizerResult {
@@ -55,6 +55,7 @@ export default function Fertilizer() {
         { value: "lentil", label: t.crops.lentil, icon: "🍲" },
         { value: "watermelon", label: t.crops.watermelon, icon: "🍉" },
         { value: "papaya", label: t.crops.papaya, icon: "🍈" },
+        { value: "pineapple", label: t.crops.pineapple, icon: "🍍" },
     ];
 
     const calculateMutation = useMutation({

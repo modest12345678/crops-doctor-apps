@@ -38,6 +38,7 @@ export const translations = {
       lentil: "Lentil",
       watermelon: "Watermelon",
       papaya: "Papaya",
+      pineapple: "Pineapple",
     },
     uploadImage: "Upload Image",
     uploadDescription: "Take a photo with your camera or select an image from your gallery",
@@ -146,6 +147,7 @@ export const translations = {
     crop_Brinjal: "Brinjal",
     crop_Tomato: "Tomato",
     crop_LocalVegetables: "Local Vegetables",
+    crop_Pineapple: "Pineapple",
 
     // Soil Deficiency Explanations (Why Necessary)
     reason_Nitrogen: "Essential for leaf growth and chlorophyll production.",
@@ -248,6 +250,7 @@ export const translations = {
       lentil: "মসুর ডাল",
       watermelon: "তরমুজ",
       papaya: "পেঁপে",
+      pineapple: "আনারস",
     },
     uploadImage: "ছবি আপলোড করুন",
     uploadDescription: "আপনার ক্যামেরা দিয়ে একটি ছবি তুলুন বা আপনার গ্যালারি থেকে একটি ছবি নির্বাচন করুন",
@@ -367,6 +370,7 @@ export const translations = {
     crop_Brinjal: "বেগুন",
     crop_Tomato: "টমেটো",
     crop_LocalVegetables: "স্থানীয় সবজি",
+    crop_Pineapple: "আনারস",
 
     // Soil Deficiency Explanations (Why Necessary)
     reason_Nitrogen: "পাতার বৃদ্ধি এবং ক্লোরোফিল তৈরির জন্য অপরিহার্য।",

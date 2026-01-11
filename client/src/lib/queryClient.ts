@@ -1,9 +1,11 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, CapacitorHttp } from "@capacitor/core";
 
-const BASE_URL = import.meta.env.VITE_API_URL || (Capacitor.isNativePlatform()
-  ? "https://cropsdoctor-ai-git-main-shaki-projects-087b3c21.vercel.app"
-  : "");
+// For native mobile apps, ALWAYS use the production server.
+// For web, use the env var (dev/prod) or default to empty (relative path).
+const BASE_URL = Capacitor.isNativePlatform()
+  ? "https://cropsdoctor.vercel.app"
+  : (import.meta.env.VITE_API_URL || "");
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -17,20 +19,57 @@ export async function apiRequest<T = void>(
   url: string,
   data?: unknown | undefined,
 ): Promise<T> {
-  const res = await fetch(`${BASE_URL}${url}`, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  const fullUrl = `${BASE_URL}${url}`;
 
-  await throwIfResNotOk(res);
+  if (Capacitor.isNativePlatform()) {
+    // Native Mobile Request (Bypasses CORS via Capacitor Core)
+    const options = {
+      url: fullUrl,
+      method: method.toUpperCase(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: data || null, // Native bridge prefers null over undefined for missing body
+    };
 
-  if (res.status === 204) {
-    return undefined as T;
+    try {
+      const response = await CapacitorHttp.request(options);
+
+      if (response.status >= 400) {
+        // CapacitorHttp returns error object or string in data
+        const errorMessage = typeof response.data === 'string'
+          ? response.data
+          : (response.data?.message || JSON.stringify(response.data) || 'API Error');
+        throw new Error(`${response.status}: ${errorMessage}`);
+      }
+
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      return response.data as T;
+    } catch (error: any) {
+      // Catch network errors or plugin errors (like NPE if it still persists, but we hope not)
+      throw new Error(error.message || "Native Request Failed");
+    }
+
+  } else {
+    // Standard Web Fetch
+    const res = await fetch(fullUrl, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
+
+    await throwIfResNotOk(res);
+
+    if (res.status === 204) {
+      return undefined as T;
+    }
+
+    return await res.json();
   }
-
-  return await res.json();
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -39,16 +78,8 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
     async ({ queryKey }) => {
-      const res = await fetch(`${BASE_URL}${queryKey.join("/")}`, {
-        credentials: "include",
-      });
-
-      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-        return null;
-      }
-
-      await throwIfResNotOk(res);
-      return await res.json();
+      const url = queryKey.join("/");
+      return apiRequest("GET", url);
     };
 
 export const queryClient = new QueryClient({

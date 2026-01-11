@@ -16,7 +16,7 @@ import FeatureNav from "./FeatureNav";
 import { FloatingActions } from "./FloatingActions";
 
 type CropType =
-    | "potato" | "tomato" | "corn" | "wheat" | "rice" | "jute" | "sugarcane" | "tea" | "mustard" | "mango" | "banana" | "brinjal" | "chili" | "onion" | "garlic" | "ginger" | "turmeric" | "lentil" | "watermelon" | "papaya";
+    | "potato" | "tomato" | "corn" | "wheat" | "rice" | "jute" | "sugarcane" | "tea" | "mustard" | "mango" | "banana" | "brinjal" | "chili" | "onion" | "garlic" | "ginger" | "turmeric" | "lentil" | "watermelon" | "papaya" | "pineapple";
 
 export default function DiseaseDetector() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -49,6 +49,7 @@ export default function DiseaseDetector() {
         { value: "lentil", label: t.crops.lentil, icon: "🍲" },
         { value: "watermelon", label: t.crops.watermelon, icon: "🍉" },
         { value: "papaya", label: t.crops.papaya, icon: "🍈" },
+        { value: "pineapple", label: t.crops.pineapple, icon: "🍍" },
     ];
 
     const detectMutation = useMutation({
