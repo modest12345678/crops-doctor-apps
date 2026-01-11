@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cropsdoctor.vercel.app/sitemap.xml
