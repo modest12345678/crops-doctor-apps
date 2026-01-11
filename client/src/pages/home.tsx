@@ -1,4 +1,5 @@
 import DetectionHistory from "@/components/DetectionHistory";
+import { SEO } from "@/components/SEO";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -14,6 +15,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Home"
+        description="Agri-Smart Helper - AI-powered crop disease detection, fertilizer calculation, and soil fertility analysis for smarter farming."
+      />
       <div className="relative bg-cover bg-center overflow-hidden mb-8" style={{ backgroundImage: "url('/hero-bg.png')" }}>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
         <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-32">

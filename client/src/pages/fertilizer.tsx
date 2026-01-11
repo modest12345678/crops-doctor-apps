@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Loader2, Sprout, Calculator } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -115,6 +116,11 @@ export default function Fertilizer() {
 
     return (
         <div className="min-h-screen bg-background">
+            <SEO
+                title="Fertilizer Calculator"
+                description="Calculate exact fertilizer requirements for your crops including Urea, TSP, and Potash based on land area."
+                image="/fertilizer-calculator.png"
+            />
             <FeatureNav />
             <div
                 className="relative bg-cover bg-center overflow-hidden mb-8"

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Loader2, Droplets, Sprout, TestTube2, AlertCircle, Info, CheckCircle2, AlertTriangle, Lightbulb } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -140,6 +141,11 @@ export default function SoilFertility() {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+            <SEO
+                title="Soil Fertility Analysis"
+                description="Analyze soil nutrients (NPK, pH, Moisture) using your GPS location to check land fertility and productivity."
+                image="/soil-satellite.png"
+            />
             <div className="text-center space-y-4">
                 <h1 className="text-3xl font-bold text-primary flex items-center justify-center gap-3">
                     <Sprout className="w-8 h-8" />

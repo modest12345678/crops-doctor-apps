@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Loader2, Cloud, CloudRain, Sun, Wind, Droplets, Thermometer, Calendar } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from "recharts";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -122,6 +123,10 @@ export default function WeatherForecast() {
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+            <SEO
+                title="Weather Forecast"
+                description="Get hyper-local farming weather forecasts including soil temperature, rain probability, and humidity."
+            />
             <div className="text-center space-y-4">
                 <h1 className="text-3xl font-bold text-primary flex items-center justify-center gap-3">
                     <Cloud className="w-10 h-10 text-blue-500" />

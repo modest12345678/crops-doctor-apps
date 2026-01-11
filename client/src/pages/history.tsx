@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, History as HistoryIcon, Image as ImageIcon } from "lucide-react";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/lib/LanguageContext";
 import type { Detection } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
@@ -40,6 +41,10 @@ export default function History() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="History"
+        description="View your past crop disease detections and analysis history."
+      />
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2 flex items-center gap-3">
