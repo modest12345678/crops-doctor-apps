@@ -2,7 +2,7 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 import { Capacitor } from "@capacitor/core";
 
 const BASE_URL = import.meta.env.VITE_API_URL || (Capacitor.isNativePlatform()
-  ? "http://192.168.0.145:5000"
+  ? "https://cropsdoctor-ai-git-main-shaki-projects-087b3c21.vercel.app"
   : "");
 
 async function throwIfResNotOk(res: Response) {

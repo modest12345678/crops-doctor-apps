@@ -15,6 +15,11 @@ function log(message: string, source = "express") {
 }
 
 const app = express();
+import cors from "cors";
+app.use(cors({
+  origin: true, // Allow any origin
+  credentials: true // Allow cookies
+}));
 
 declare module 'http' {
   interface IncomingMessage {
